@@ -1,0 +1,35 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>College Notes Sharing System</title>
+    <link rel="stylesheet" href="{% static 'css/global.css' %}">
+</head>
+<body>
+    <nav>
+        <div class="logo" >College Notes</div>
+        <div class="nav-links">
+            <a href="{% url 'notes:study_material_list' %}">Study Materials</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'notes:upload_study_material' %}">Upload</a>
+                <span>Welcome, {{ user.username }}!</span>
+                <a href="{% url 'notes:logout' %}" class="btn-primary">Logout</a>
+            {% else %}
+                <a href="{% url 'notes:register' %}" class="btn-primary">Register</a>
+                <a href="{% url 'notes:login' %}" class="btn-primary">Login</a>
+            {% endif %}
+        </div>
+    </nav>
+    <div class="container">
+        {% if user.is_authenticated %}
+            <h1>Welcome back, {{ user.username }}!</h1>
+        {% else %}
+            <section class="hero">
+                <h1>Welcome to the College Notes Sharing System</h1>
+                <p>Your one-stop platform to share and access study materials easily and efficiently.</p>
+                <a href="{% url 'notes:study_material_list' %}" class="btn-primary btn-large">Explore Study Materials</a>
+            </section>
+        {% endif %}
+    </div>
+</body>
+</html>

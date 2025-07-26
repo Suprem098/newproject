@@ -1,0 +1,107 @@
+{% load static %}
+{% load feedback_extras %}
+
+    
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Study Materials - College Notes Sharing System</title>
+    <link rel="stylesheet" href="{% static 'css/global.css' %}">
+    <script src="{% static 'js/autocomplete.js' %}"></script>
+</head>
+<body>
+    <nav>
+        <div class="logo">College Notes</div>
+        <div class="nav-links">
+            <a href="{% url 'notes:study_material_list' %}">Study Materials</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'notes:upload_study_material' %}">Upload</a>
+                <span>Welcome, {{ user.username }}!</span>
+                <a href="{% url 'notes:logout' %}" class="btn-primary">Logout</a>
+            {% else %}
+                <a href="{% url 'notes:register' %}" class="btn-primary">Register</a>
+                <a href="{% url 'notes:login' %}" class="btn-primary">Login</a>
+            {% endif %}
+        </div>
+    </nav>
+    <div class="container">
+        <h2>Study Materials</h2>
+        <form method="get" id="filterForm">
+            <input type="text" name="search" id="searchInput" placeholder="Search by title or subject" value="{{ filter_form.data.search|default_if_none:'' }}" autocomplete="off" />
+            <div id="suggestions"></div>
+            <select name="subject" onchange="document.getElementById('filterForm').submit();">
+                <option value="">All Subjects</option>
+                {% for subject in subjects %}
+                    <option value="{{ subject }}" {% if filter_form.data.subject == subject %}selected{% endif %}>{{ subject }}</option>
+                {% endfor %}
+            </select>
+            <select name="semester" onchange="document.getElementById('filterForm').submit();">
+                <option value="">All Semesters</option>
+                {% for key, val in filter_form.fields.semester.choices %}
+                    <option value="{{ key }}" {% if filter_form.data.semester == key %}selected{% endif %}>{{ val }}</option>
+                {% endfor %}
+            </select>
+            <input type="text" name="faculty" placeholder="Faculty" value="{{ filter_form.data.faculty|default_if_none:'' }}" onchange="document.getElementById('filterForm').submit();" />
+            <label for="date_uploaded_from">From:</label>
+            <input type="date" name="date_uploaded_from" value="{{ filter_form.data.date_uploaded_from|default_if_none:'' }}" onchange="document.getElementById('filterForm').submit();" />
+            <label for="date_uploaded_to">To:</label>
+            <input type="date" name="date_uploaded_to" value="{{ filter_form.data.date_uploaded_to|default_if_none:'' }}" onchange="document.getElementById('filterForm').submit();" />
+            <button type="submit">Filter</button>
+        </form>
+        <ul>
+            {% for material in study_materials %}
+                <li>
+                    <strong>{{ material.title }}</strong> ({{ material.department.name }}) - Uploaded by {{ material.uploaded_by.username }} on {{ material.upload_date|date:"Y-m-d" }}
+                    <br>
+                    {% if material.file.url|lower|slice:"-4:" == ".pdf" %}
+                        <embed src="{{ material.file.url }}" type="application/pdf" width="100%" height="400px" />
+                        <br>
+                        <a href="{% url 'notes:download_study_material' material.pk %}">Download PDF</a>
+                        <br><br>
+                        <details>
+                            <summary>Give Feedback</summary>
+                            <div class="feedback-container">
+                                <form method="post" action="{% url 'notes:submit_feedback' material.pk %}">
+                                    {% csrf_token %}
+                                    <label for="id_rating_{{ forloop.counter }}">Rating (1-5):</label>
+                                    <select name="rating" id="id_rating_{{ forloop.counter }}" required>
+                                        <option value="">Select</option>
+                                        {% for i in "12345" %}
+                                            <option value="{{ i }}">{{ i }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <br>
+                                    <label for="id_comments_{{ forloop.counter }}">Comments:</label><br>
+                                    <textarea name="comments" id="id_comments_{{ forloop.counter }}" rows="3" cols="40"></textarea>
+                                    <br>
+                                    <button type="submit">Submit Feedback</button>
+                                </form>
+                            </div>
+                        </details>
+                        <br>
+                        {% with feedbacks=material.feedbacks.all %}
+                            {% if feedbacks %}
+                                <strong>Feedbacks ({{ feedbacks.count }})</strong><br>
+                                Average Rating: {{ feedbacks|average_rating }}<br>
+                                <ul>
+                                    {% for fb in feedbacks %}
+                                        <li>{{ fb.user.username }}: Rating {{ fb.rating }} - {{ fb.comments }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        {% endwith %}
+                    {% else %}
+                        <a href="{{ material.file.url }}" target="_blank">View File</a> |
+                        <a href="{% url 'notes:download_study_material' material.pk %}">Download</a>
+                    {% endif %}
+                </li>
+            {% empty %}
+                <li>No study materials found.</li>
+            {% endfor %}
+        </ul><br><br>
+        <p><a href="{% url 'notes:upload_study_material' %}" class="btn-primary">Upload New Study Material</a></p><br><br>
+        <p><a href="{% url 'notes:home' %}" class="btn-primary">Home</a></p>
+    </div>
+        
+</body>
+</html>

@@ -1,0 +1,47 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login - College Notes Sharing System</title>
+    <link rel="stylesheet" href="{% static 'css/global.css' %}">
+</head>
+<body>
+    <nav>
+        <div class="logo">College Notes</div>
+        <div class="nav-links">
+            <a href="{% url 'notes:study_material_list' %}">Study Materials</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'notes:upload_study_material' %}">Upload</a>
+                <span>Welcome, {{ user.username }}!</span>
+                <a href="{% url 'notes:logout' %}" class="btn-primary">Logout</a>
+            {% else %}
+                <a href="{% url 'notes:register' %}" class="btn-primary">Register</a>
+                <a href="{% url 'notes:login' %}" class="btn-primary">Login</a>
+            {% endif %}
+        </div>
+    </nav>
+    <div class="container">
+        <h2>Login</h2>
+        <form method="post">
+            {% csrf_token %}
+            {% if form.errors %}
+                <div class="form-errors" style="color: red; margin-bottom: 15px;">
+                    <ul>
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+            {{ form.as_p }}
+            <button type="submit" class="btn-primary">Login</button>
+        </form>
+        <p>Don't have an account? <a href="{% url 'notes:register' %}">Register here</a>.</p>
+    </div>
+</body>
+</html>
