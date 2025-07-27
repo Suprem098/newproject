@@ -1,0 +1,586 @@
+/* filepath: [global.css](http://_vscodecontentref_/0) */
+/* ===============================
+   College Notes Sharing System UI
+   Modern • Clean • Responsive
+================================ */
+
+/* === 1. CSS Variables & Theme === */
+:root {
+  --color-primary: #2c3e50;
+  --color-primary-light: #3498db;
+  --color-accent: #1abc9c;
+  --color-bg: #eaf6fb;
+  --color-white: #ffffff;
+  --color-text: #2d3436;
+  --color-muted: #7f8c8d;
+  --color-border: #dfe6e9;
+
+  --border-radius: 16px;
+  --border-radius-sm: 8px;
+  --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  --transition: 0.3s cubic-bezier(.4,0,.2,1);
+  --shadow-light: 0 4px 24px rgba(44, 62, 80, 0.06);
+  --shadow-medium: 0 8px 32px rgba(44, 62, 80, 0.12);
+  --shadow-dark: 0 12px 40px rgba(44, 62, 80, 0.18);
+}
+
+/* === 2. Reset & Base === */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-family);
+  background: linear-gradient(120deg, #e0eafc 0%, #cfdef3 100%);
+  color: var(--color-text);
+  font-size: 16px;
+  line-height: 1.7;
+  min-height: 100vh;
+  transition: background 0.5s;
+}
+
+a {
+  color: var(--color-primary-light);
+  text-decoration: none;
+  transition: color var(--transition);
+}
+a:hover {
+  color: var(--color-accent);
+  text-decoration: underline;
+}
+
+/* === 3. Navigation === */
+nav {
+  background: rgba(44, 62, 80, 0.97);
+  padding: 18px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  border-radius: 0 0 var(--border-radius) var(--border-radius);
+  box-shadow: var(--shadow-medium);
+  backdrop-filter: blur(8px);
+}
+
+nav .logo {
+  font-size: 2.2rem;
+  font-weight: bold;
+  color: var(--color-white);
+  letter-spacing: 0.12em;
+  text-shadow: 0 2px 8px rgba(44,62,80,0.15);
+}
+
+nav .nav-links {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+nav .nav-links a {
+  color: var(--color-white);
+  font-size: 1.1rem;
+  font-weight: 600;
+  padding: 10px 18px;
+  border-radius: var(--border-radius-sm);
+  position: relative;
+  transition: all var(--transition);
+  background: rgba(255,255,255,0.02);
+}
+nav .nav-links a:hover {
+  color: var(--color-accent);
+  background: rgba(26, 188, 156, 0.12);
+}
+
+nav .nav-links .btn-primary {
+  background: linear-gradient(90deg, var(--color-accent), var(--color-primary-light));
+  padding: 10px 24px;
+  color: var(--color-white);
+  font-weight: 700;
+  border-radius: var(--border-radius-sm);
+  box-shadow: 0 6px 18px rgba(26, 188, 156, 0.25);
+  transition: all var(--transition);
+  border: none;
+}
+nav .nav-links .btn-primary:hover {
+  background: linear-gradient(90deg, #16a085, #2980b9);
+  transform: translateY(-2px) scale(1.05);
+}
+
+/* Style username in navbar */
+nav .nav-links span {
+  background: rgba(52, 152, 219, 0.15);
+  color: #fff;
+  padding: 8px 18px;
+  border-radius: 24px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-right: 10px;
+  box-shadow: 0 2px 8px rgba(44,62,80,0.10);
+  border: 1px solid #3498db;
+}
+
+/* === 4. Headings === */
+h1, h2, h3 {
+  color: var(--color-primary);
+  margin-bottom: 20px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-shadow: 0 2px 8px rgba(44,62,80,0.07);
+}
+h1 { font-size: 3.2rem; }
+h2 { font-size: 2.3rem; }
+h3 { font-size: 1.8rem; }
+
+/* === 5. Container === */
+.container {
+  max-width: 980px;
+  margin: 60px auto;
+  background: rgba(255,255,255,0.85);
+  padding: 48px 56px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-light);
+  transition: box-shadow var(--transition), background 0.5s;
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.7s;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(30px);}
+  to { opacity: 1; transform: translateY(0);}
+}
+.container:hover {
+  box-shadow: var(--shadow-dark);
+  background: rgba(255,255,255,0.95);
+}
+
+/* === 6. Filter Form === */
+#filterForm {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 32px;
+  background: rgba(234,246,246,0.7);
+  padding: 18px 16px;
+  border-radius: var(--border-radius-sm);
+  box-shadow: var(--shadow-light);
+}
+#filterForm input[type="text"],
+#filterForm select,
+#filterForm input[type="date"] {
+  padding: 10px 16px;
+  border-radius: var(--border-radius-sm);
+  border: 2px solid var(--color-border);
+  font-size: 1rem;
+  background: #fff;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+#filterForm input:focus,
+#filterForm select:focus {
+  border-color: var(--color-primary-light);
+  outline: none;
+  box-shadow: 0 0 8px rgba(52, 152, 219, 0.18);
+}
+#filterForm button {
+  background: linear-gradient(90deg, var(--color-accent), var(--color-primary-light));
+  color: var(--color-white);
+  border: none;
+  padding: 10px 24px;
+  font-weight: bold;
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  transition: background var(--transition), transform 0.2s;
+  box-shadow: 0 4px 12px rgba(26, 188, 156, 0.18);
+}
+#filterForm button:hover {
+  background: linear-gradient(90deg, #16a085, #2980b9);
+  transform: scale(1.05);
+}
+
+/* === 7. Study Materials List & Card === */
+ul.materials-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  align-items: center;
+}
+
+.material-card, ul > li {
+  background: rgba(255,255,255,0.98);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-medium);
+  padding: 36px 32px;
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  transition: box-shadow var(--transition), transform var(--transition);
+  animation: fadeIn 0.7s;
+}
+
+.material-card:hover, ul > li:hover {
+  box-shadow: var(--shadow-dark);
+  transform: scale(1.02);
+}
+
+.material-card strong, ul > li strong {
+  font-size: 1.4rem;
+  color: var(--color-primary);
+  margin-bottom: 8px;
+}
+
+.material-card .meta, ul > li .meta {
+  color: var(--color-muted);
+  font-size: 1rem;
+  margin-bottom: 10px;
+}
+
+.material-card embed,
+ul > li embed {
+  width: 100%;
+  min-height: 350px;
+  background: #f4f7fa;
+  border: 2px solid var(--color-primary-light);
+  border-radius: var(--border-radius-sm);
+  box-shadow: var(--shadow-light);
+  margin-bottom: 18px;
+  display: block;
+}
+
+.material-card .actions,
+ul > li .actions {
+  margin-top: 18px;
+  display: flex;
+  gap: 18px;
+  justify-content: flex-end;
+}
+
+.material-card .button-group,
+ul > li .button-group {
+  justify-content: flex-start;
+  margin-top: 24px;
+}
+
+.material-card .feedback-container,
+ul > li .feedback-container {
+  margin-top: 24px;
+  background: rgba(234,246,246,0.98);
+  border-left: 5px solid var(--color-accent);
+  box-shadow: var(--shadow-light);
+  padding: 24px;
+  border-radius: var(--border-radius-sm);
+}
+
+/* === 8. PDF Viewer === */
+embed {
+  width: 100%;
+  height: 400px;
+  margin-top: 18px;
+  border: 2px solid var(--color-primary-light);
+  border-radius: var(--border-radius-sm);
+  box-shadow: var(--shadow-light);
+  background: #f4f7fa;
+}
+
+/* === 9. Buttons === */
+button,
+.btn-primary {
+  background: linear-gradient(90deg, var(--color-accent), var(--color-primary-light));
+  color: var(--color-white);
+  border: none;
+  padding: 14px 44px;
+  font-size: 1.15rem;
+  font-weight: bold;
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  transition: background var(--transition), transform 0.2s;
+  box-shadow: 0 8px 24px rgba(26, 188, 156, 0.22);
+}
+button:focus,
+.btn-primary:focus {
+  outline: 2px solid var(--color-primary-light);
+  outline-offset: 2px;
+}
+button:hover,
+.btn-primary:hover {
+  background: linear-gradient(90deg, #16a085, #2980b9);
+  transform: scale(1.07);
+}
+
+/* === 10. Forms === */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  margin-bottom: 40px;
+}
+form label {
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: var(--color-primary);
+}
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="date"],
+select,
+textarea {
+  padding: 14px 22px;
+  border-radius: var(--border-radius-sm);
+  border: 2px solid var(--color-border);
+  font-size: 1rem;
+  transition: border-color var(--transition), box-shadow var(--transition);
+  width: 100%;
+  max-width: 520px;
+  background: rgba(255,255,255,0.7);
+  box-shadow: 0 2px 8px rgba(44,62,80,0.07);
+}
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--color-primary-light);
+  outline: none;
+  box-shadow: 0 0 12px rgba(52, 152, 219, 0.18);
+}
+
+/* === 11. Feedback Box === */
+.feedback-container {
+  background: rgba(234,246,246,0.95);
+  padding: 32px;
+  border-radius: var(--border-radius);
+  border-left: 6px solid var(--color-accent);
+  box-shadow: var(--shadow-light);
+  margin-top: 24px;
+}
+.feedback-container textarea,
+.feedback-container select {
+  width: 100%;
+  padding: 14px;
+  border-radius: var(--border-radius-sm);
+  border: 2px solid var(--color-border);
+  font-size: 1rem;
+  background: rgba(255,255,255,0.7);
+}
+.feedback-container button {
+  margin-top: 15px;
+  background: linear-gradient(90deg, var(--color-accent), var(--color-primary-light));
+  color: var(--color-white);
+  padding: 14px 34px;
+  border: none;
+  font-weight: 700;
+  border-radius: 40px;
+  cursor: pointer;
+  box-shadow: 0 10px 25px rgba(26, 188, 156, 0.5);
+  transition: background var(--transition), transform 0.2s;
+}
+.feedback-container button:hover {
+  background: linear-gradient(90deg, #16a085, #2980b9);
+  transform: scale(1.07);
+}
+
+/* === 12. Upload Page === */
+.upload-container {
+  max-width: 600px;
+  margin: 40px auto;
+  background: rgba(255,255,255,0.95);
+  padding: 36px 32px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-medium);
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+.upload-container h2 {
+  text-align: center;
+  margin-bottom: 18px;
+}
+.upload-container form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.upload-container label {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.upload-container input,
+.upload-container textarea,
+.upload-container select {
+  padding: 12px 18px;
+  border-radius: var(--border-radius-sm);
+  border: 2px solid var(--color-border);
+  font-size: 1rem;
+  background: rgba(255,255,255,0.8);
+}
+.upload-container button {
+  align-self: flex-end;
+  margin-top: 10px;
+}
+
+/* === 13. Login/Register Page === */
+.auth-container {
+  max-width: 420px;
+  margin: 60px auto;
+  background: rgba(255,255,255,0.97);
+  padding: 38px 32px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-medium);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.auth-container h2 {
+  text-align: center;
+  margin-bottom: 18px;
+}
+.auth-container form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.auth-container label {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.auth-container input,
+.auth-container textarea,
+.auth-container select {
+  padding: 12px 18px;
+  border-radius: var(--border-radius-sm);
+  border: 2px solid var(--color-border);
+  font-size: 1rem;
+  background: rgba(255,255,255,0.8);
+}
+.auth-container button {
+  align-self: flex-end;
+  margin-top: 10px;
+}
+
+/* === 14. Button Group === */
+.button-group {
+  display: flex;
+  gap: 22px;
+  margin-top: 30px;
+  flex-wrap: wrap;
+}
+.button-group a,
+.button-group button {
+  background: linear-gradient(90deg, var(--color-accent), var(--color-primary-light));
+  color: var(--color-white);
+  padding: 14px 34px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 1.05rem;
+  box-shadow: 0 6px 18px rgba(26, 188, 156, 0.22);
+  transition: background 0.3s ease, transform 0.2s ease;
+  border: none;
+}
+.button-group a:hover,
+.button-group button:hover {
+  background: linear-gradient(90deg, #16a085, #2980b9);
+  transform: translateY(-3px) scale(1.05);
+}
+
+/* === 15. Admin Page === */
+.admin-container {
+  max-width: 900px;
+  margin: 50px auto;
+  background: rgba(255,255,255,0.98);
+  padding: 40px 36px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-dark);
+}
+.admin-container h2 {
+  margin-bottom: 24px;
+}
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 24px;
+}
+.admin-table th, .admin-table td {
+  padding: 14px 10px;
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+}
+.admin-table th {
+  background: var(--color-primary-light);
+  color: var(--color-white);
+  font-weight: 700;
+}
+.admin-table tr:hover {
+  background: rgba(52, 152, 219, 0.08);
+}
+
+/* === 16. Responsive === */
+@media (max-width: 900px) {
+  .container, .admin-container, .upload-container, .auth-container {
+    margin: 30px 10px;
+    padding: 30px;
+  }
+  nav {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 14px 10px;
+  }
+  nav .nav-links {
+    flex-direction: column;
+    gap: 14px;
+    width: 100%;
+    margin-top: 15px;
+  }
+  nav .nav-links a {
+    width: 100%;
+    padding: 12px;
+  }
+  .hero h1 {
+    font-size: 2.4rem;
+  }
+  .hero p {
+    font-size: 1.1rem;
+  }
+  ul.materials-list,
+  ul > li,
+  .material-card {
+    max-width: 98vw;
+    padding: 18px 8px;
+  }
+}
+
+@media (max-width: 600px) {
+  h1 { font-size: 2rem; }
+  h2 { font-size: 1.6rem; }
+  .hero h1 { font-size: 2rem; }
+  .container, .admin-container, .upload-container, .auth-container {
+    padding: 18px 6px;
+  }
+  nav .logo {
+    font-size: 1.3rem;
+  }
+  .material-card, ul > li {
+    padding: 12px 2px;
+  }
+  #filterForm {
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px 4px;
+  }
+}
+
+/* === 17. Utility Classes === */
+.text-center { text-align: center; }
+.mt-2 { margin-top: 12px; }
+.mt-3 { margin-top: 24px; }
+.mb-2 { margin-bottom: 12px; }
+.mb-3 { margin-bottom: 24px; }
+.text-muted { color: var(--color-muted); }
+.rounded { border-radius: var(--border-radius-sm); }
+.shadow { box-shadow: var(--shadow-light); }
