@@ -2,11 +2,14 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, Http404
-from .forms import UserRegisterForm, StudyMaterialForm, StudyMaterialFilterForm, FeedbackForm
-from .models import StudyMaterial, Department, Feedback
+from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
 from django.db.models import Q
-from django.http import JsonResponse, HttpResponseForbidden
+import logging
+
+from .forms import UserRegisterForm, StudyMaterialForm, StudyMaterialFilterForm, FeedbackForm
+from .models import StudyMaterial, Department, Feedback, Profile
+
+logger = logging.getLogger(__name__)
 
 def home(request):
     return render(request, 'notes/home.html')
@@ -16,6 +19,13 @@ def register(request):
         form = UserRegisterForm(request.POST)
         if form.is_valid():
             user = form.save()
+            # Ensure profile exists
+            from .models import Profile
+            from django.db.utils import IntegrityError
+            try:
+                Profile.objects.get(user=user)
+            except Profile.DoesNotExist:
+                Profile.objects.create(user=user, role='student')
             login(request, user)
             return redirect('notes:home')
     else:
@@ -39,20 +49,33 @@ def user_logout(request):
 
 @login_required
 def upload_study_material(request):
-    # Allow only teachers and admin (staff) to upload
-    if not (request.user.is_staff or (hasattr(request.user, 'profile') and request.user.profile.role == 'teacher')):
-        return HttpResponseForbidden("You do not have permission to upload study materials.")
+    try:
+        profile = Profile.objects.get(user=request.user)
+    except Profile.DoesNotExist:
+        # Create profile with default role if missing
+        profile = Profile.objects.create(user=request.user, role='student')
+        logger.info(f"Created missing profile for user {request.user.username} with default role 'student'.")
+    role_raw = profile.role
+    logger.info(f"User {request.user.username} profile role raw value: {repr(role_raw)} (type: {type(role_raw)})")
+    role = role_raw.lower().strip() if role_raw else ''
+    logger.info(f"User {request.user.username} with normalized role {repr(role)} attempting upload.")
+
+    if not (request.user.is_staff or role == 'teacher'):
+        logger.warning(f"User {request.user.username} denied upload. Role: {repr(role_raw)}")
+        return HttpResponseForbidden("Only teachers or admins can upload materials.")
 
     if request.method == 'POST':
         form = StudyMaterialForm(request.POST, request.FILES)
         if form.is_valid():
             study_material = form.save(commit=False)
             study_material.uploaded_by = request.user
-            # TODO: Extract text from PDF and save to extracted_text field
             study_material.save()
             return redirect('notes:study_material_list')
+        else:
+            logger.warning(f"Form errors: {form.errors}")
     else:
         form = StudyMaterialForm()
+    
     return render(request, 'notes/upload.html', {'form': form})
 
 @login_required
@@ -60,7 +83,6 @@ def study_material_list(request):
     filter_form = StudyMaterialFilterForm(request.GET)
     study_materials = StudyMaterial.objects.all()
     departments = Department.objects.all()
-    subjects = StudyMaterial.objects.values_list('department__name', flat=True).distinct()
 
     if filter_form.is_valid():
         subject = filter_form.cleaned_data.get('subject')
@@ -84,6 +106,7 @@ def study_material_list(request):
             study_materials = study_materials.filter(
                 Q(title__icontains=search) |
                 Q(department__name__icontains=search) |
+                Q(subject__icontains=search) |
                 Q(extracted_text__icontains=search)
             )
 
@@ -91,7 +114,6 @@ def study_material_list(request):
         'study_materials': study_materials,
         'departments': departments,
         'filter_form': filter_form,
-        'subjects': subjects,
     })
 
 @login_required

@@ -24,7 +24,11 @@
         <h2>Register</h2>
         <form method="post">
             {% csrf_token %}
-            {{ form.as_p }}
+            {{ form.username.label_tag }} {{ form.username }}
+            {{ form.email.label_tag }} {{ form.email }}
+            {{ form.password1.label_tag }} {{ form.password1 }}
+            {{ form.password2.label_tag }} {{ form.password2 }}
+            {{ form.role.label_tag }} {{ form.role }}
             <button type="submit" class="btn-primary">Register</button>
         </form>
         <p>Already have an account? <a href="{% url 'notes:login' %}">Login here</a>.</p>

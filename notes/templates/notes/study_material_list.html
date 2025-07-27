@@ -11,7 +11,7 @@
 </head>
 <body>
     <nav>
-        <div class="logo">College Notes</div>
+        <div class="logo"><a href="{% url 'notes:home' %}">College Notes</a></div>
         <div class="nav-links">
             <a href="{% url 'notes:study_material_list' %}">Study Materials</a>
             {% if user.is_authenticated %}
