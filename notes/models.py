@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.contrib.auth.models import User
 
 class Profile(models.Model):
     ROLE_CHOICES = (
@@ -54,3 +53,35 @@ class Feedback(models.Model):
 
     def __str__(self):
         return f"Feedback by {self.user.username} for {self.study_material.title}"
+
+# New models for notifications
+
+class UserSubjectSubscription(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='subject_subscriptions')
+    subject = models.CharField(max_length=200)
+
+    class Meta:
+        unique_together = ('user', 'subject')
+
+    def __str__(self):
+        return f"{self.user.username} subscribed to {self.subject}"
+
+class Notification(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
+    study_material = models.ForeignKey(StudyMaterial, on_delete=models.CASCADE)
+    message = models.CharField(max_length=255)
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Notification for {self.user.username}: {self.message}"
+
+class Notice(models.Model):
+    title = models.CharField(max_length=200)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.title

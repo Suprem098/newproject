@@ -6,13 +6,16 @@ from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
 from django.db.models import Q
 import logging
 
-from .forms import UserRegisterForm, StudyMaterialForm, StudyMaterialFilterForm, FeedbackForm
+from .forms import UserRegisterForm, StudyMaterialForm, StudyMaterialFilterForm, FeedbackForm, ProfileForm
 from .models import StudyMaterial, Department, Feedback, Profile
 
 logger = logging.getLogger(__name__)
 
+from .models import Notice
+
 def home(request):
-    return render(request, 'notes/home.html')
+    notices = Notice.objects.filter(is_active=True).order_by('-created_at')
+    return render(request, 'notes/home.html', {'notices': notices})
 
 def register(request):
     if request.method == 'POST':
@@ -80,9 +83,14 @@ def upload_study_material(request):
 
 @login_required
 def study_material_list(request):
-    filter_form = StudyMaterialFilterForm(request.GET)
-    study_materials = StudyMaterial.objects.all()
     departments = Department.objects.all()
+    faculty_choices = [(dept.name, dept.name) for dept in departments]
+
+    # Get unique subjects for filter dropdown
+    subjects = StudyMaterial.objects.values_list('subject', flat=True).distinct().order_by('subject')
+
+    filter_form = StudyMaterialFilterForm(request.GET, faculty_choices=faculty_choices)
+    study_materials = StudyMaterial.objects.all()
 
     if filter_form.is_valid():
         subject = filter_form.cleaned_data.get('subject')
@@ -97,7 +105,7 @@ def study_material_list(request):
         if semester:
             study_materials = study_materials.filter(semester__icontains=semester)
         if faculty:
-            study_materials = study_materials.filter(uploaded_by__username__icontains=faculty)
+            study_materials = study_materials.filter(department__name__icontains=faculty)
         if date_from:
             study_materials = study_materials.filter(upload_date__gte=date_from)
         if date_to:
@@ -114,6 +122,7 @@ def study_material_list(request):
         'study_materials': study_materials,
         'departments': departments,
         'filter_form': filter_form,
+        'subjects': subjects,
     })
 
 @login_required
@@ -150,3 +159,29 @@ def submit_feedback(request, study_material_id):
     else:
         form = FeedbackForm()
     return render(request, 'notes/submit_feedback.html', {'form': form, 'study_material': study_material})
+
+@login_required
+def profile_view(request):
+    profile = get_object_or_404(Profile, user=request.user)
+    return render(request, 'notes/profile.html', {'profile': profile})
+
+@login_required
+def profile_edit(request):
+    profile = get_object_or_404(Profile, user=request.user)
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, instance=profile, user=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect('notes:profile_view')
+    else:
+        form = ProfileForm(instance=profile, user=request.user)
+    return render(request, 'notes/profile_edit.html', {'form': form})
+
+from typing import Any, Dict
+from django.http import HttpRequest, HttpResponse
+
+@login_required
+def notifications_list(request: HttpRequest) -> HttpResponse:
+    notifications = Notification.objects.filter(user=request.user).order_by('-created_at')
+    context: Dict[str, Any] = {'notifications': notifications}
+    return render(request, 'notes/notifications_list.html', context)

@@ -15,6 +15,8 @@ urlpatterns = [
     path('materials/download/<int:pk>/', views.download_study_material, name='download_study_material'),
     path('autocomplete/', views.autocomplete_suggestions, name='autocomplete_suggestions'),
     path('materials/<int:study_material_id>/feedback/', views.submit_feedback, name='submit_feedback'),
+    path('profile/', views.profile_view, name='profile_view'),
+    path('profile/edit/', views.profile_edit, name='profile_edit'),
     path('debug/users/', views_debug.list_users_profiles, name='debug_users'),
 ]
 

@@ -25,8 +25,7 @@ SECRET_KEY = 'django-insecure-4&6$(07vq#-y!tc6^-)e#f301%q-u!s*7d1uz%p5-^w0q@q+bk
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.onrender.com']
 
 # Application definition
 
@@ -136,11 +135,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
-import os
-
-DEBUG = os.environ.get('DEBUG', 'False') == 'True'
-
-ALLOWED_HOSTS = ['.onrender.com', 'localhost']
 
 
 

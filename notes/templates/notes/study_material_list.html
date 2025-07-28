@@ -3,20 +3,23 @@
 
     
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Study Materials - College Notes Sharing System</title>
-    <link rel="stylesheet" href="{% static 'css/global.css' %}">
+    <link rel="stylesheet" href="{% static 'css/global.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/study_material_list.css' %}" />
     <script src="{% static 'js/autocomplete.js' %}"></script>
 </head>
 <body>
-    <nav>
+    <nav role="navigation" aria-label="Main Navigation">
         <div class="logo"><a href="{% url 'notes:home' %}">College Notes</a></div>
         <div class="nav-links">
-            <a href="{% url 'notes:study_material_list' %}">Study Materials</a>
+            <a href="{% url 'notes:study_material_list' %}">Study Notes</a>
             {% if user.is_authenticated %}
                 <a href="{% url 'notes:upload_study_material' %}">Upload</a>
-                <span>Welcome, {{ user.username }}!</span>
+                <span aria-label="Logged in user">Welcome, {{ user.username }}!</span>
                 <a href="{% url 'notes:logout' %}" class="btn-primary">Logout</a>
             {% else %}
                 <a href="{% url 'notes:register' %}" class="btn-primary">Register</a>
@@ -24,84 +27,97 @@
             {% endif %}
         </div>
     </nav>
-    <div class="container">
-        <h2>Study Materials</h2>
-        <form method="get" id="filterForm">
-            <input type="text" name="search" id="searchInput" placeholder="Search by title or subject" value="{{ filter_form.data.search|default_if_none:'' }}" autocomplete="off" />
-            <div id="suggestions"></div>
-            <select name="subject" onchange="document.getElementById('filterForm').submit();">
+    <main class="container" role="main">
+        <h2>NOTES</h2>
+        <form method="get" id="filterForm" aria-label="Filter Study Materials">
+            <input type="text" name="search" id="searchInput" placeholder="Search by title or subject" value="{{ filter_form.data.search|default_if_none:'' }}" autocomplete="off" aria-describedby="suggestions" />
+            <div id="suggestions" role="listbox"></div>
+            <select name="subject" onchange="document.getElementById('filterForm').submit();" aria-label="Filter by Subject">
                 <option value="">All Subjects</option>
                 {% for subject in subjects %}
                     <option value="{{ subject }}" {% if filter_form.data.subject == subject %}selected{% endif %}>{{ subject }}</option>
                 {% endfor %}
             </select>
-            <select name="semester" onchange="document.getElementById('filterForm').submit();">
+            <select name="semester" onchange="document.getElementById('filterForm').submit();" aria-label="Filter by Semester">
                 <option value="">All Semesters</option>
                 {% for key, val in filter_form.fields.semester.choices %}
                     <option value="{{ key }}" {% if filter_form.data.semester == key %}selected{% endif %}>{{ val }}</option>
                 {% endfor %}
             </select>
-            <input type="text" name="faculty" placeholder="Faculty" value="{{ filter_form.data.faculty|default_if_none:'' }}" onchange="document.getElementById('filterForm').submit();" />
+            <select name="faculty" onchange="document.getElementById('filterForm').submit();" aria-label="Filter by Faculty">
+                {% for val, label in filter_form.fields.faculty.choices %}
+                    <option value="{{ val }}" {% if filter_form.data.faculty == val %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
             <label for="date_uploaded_from">From:</label>
-            <input type="date" name="date_uploaded_from" value="{{ filter_form.data.date_uploaded_from|default_if_none:'' }}" onchange="document.getElementById('filterForm').submit();" />
+            <input type="date" name="date_uploaded_from" value="{{ filter_form.data.date_uploaded_from|default_if_none:'' }}" onchange="document.getElementById('filterForm').submit();" aria-label="Filter by Date From" />
             <label for="date_uploaded_to">To:</label>
-            <input type="date" name="date_uploaded_to" value="{{ filter_form.data.date_uploaded_to|default_if_none:'' }}" onchange="document.getElementById('filterForm').submit();" />
-            <button type="submit">Filter</button>
+            <input type="date" name="date_uploaded_to" value="{{ filter_form.data.date_uploaded_to|default_if_none:'' }}" onchange="document.getElementById('filterForm').submit();" aria-label="Filter by Date To" />
+            <button type="submit" class="btn-primary">Filter</button>
         </form>
-        <ul>
+        <div class="materials-grid" aria-live="polite" aria-relevant="additions removals">
             {% for material in study_materials %}
-                <li>
-                    <strong>{{ material.title }}</strong> ({{ material.department.name }}) - Uploaded by {{ material.uploaded_by.username }} on {{ material.upload_date|date:"Y-m-d" }}
-                    <br>
-                    {% if material.file.url|lower|slice:"-4:" == ".pdf" %}
-                        <embed src="{{ material.file.url }}" type="application/pdf" width="100%" height="400px" />
-                        <br>
-                        <a href="{% url 'notes:download_study_material' material.pk %}">Download PDF</a>
-                        <br><br>
-                        <details>
-                            <summary>Give Feedback</summary>
-                            <div class="feedback-container">
-                                <form method="post" action="{% url 'notes:submit_feedback' material.pk %}">
-                                    {% csrf_token %}
-                                    <label for="id_rating_{{ forloop.counter }}">Rating (1-5):</label>
-                                    <select name="rating" id="id_rating_{{ forloop.counter }}" required>
-                                        <option value="">Select</option>
-                                        {% for i in "12345" %}
-                                            <option value="{{ i }}">{{ i }}</option>
-                                        {% endfor %}
-                                    </select>
-                                    <br>
-                                    <label for="id_comments_{{ forloop.counter }}">Comments:</label><br>
-                                    <textarea name="comments" id="id_comments_{{ forloop.counter }}" rows="3" cols="40"></textarea>
-                                    <br>
-                                    <button type="submit">Submit Feedback</button>
-                                </form>
-                            </div>
-                        </details>
-                        <br>
-                        {% with feedbacks=material.feedbacks.all %}
-                            {% if feedbacks %}
-                                <strong>Feedbacks ({{ feedbacks.count }})</strong><br>
-                                Average Rating: {{ feedbacks|average_rating }}<br>
-                                <ul>
-                                    {% for fb in feedbacks %}
-                                        <li>{{ fb.user.username }}: Rating {{ fb.rating }} - {{ fb.comments }}</li>
+                <div class="material-card">
+                    <div class="material-header">
+                        <h3>{{ material.title }}</h3>
+                        <span class="material-department">{{ material.department.name }}</span>
+                    </div>
+                    <p class="material-description">{{ material.description|truncatewords:30 }}</p>
+                    <div class="material-meta">
+                        <span>Uploaded by {{ material.uploaded_by.username }}</span> |
+                        <span>{{ material.upload_date|date:"Y-m-d" }}</span>
+                    </div>
+                    <div class="material-actions">
+                        <a href="{{ material.file.url }}" target="_blank" class="btn-primary btn-sm">
+                            {% comment %} <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-book" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                                <path d="M4 4.5A2.5 2.5 0 0 1 6.5 7H20v13"></path>
+                            </svg> {% endcomment %}
+                            Read Note
+                        </a>
+                        <a href="{% url 'notes:download_study_material' material.pk %}" class="btn-primary btn-sm">Download</a>
+                    </div>
+                    <details>
+                        <summary>Give Feedback</summary>
+                        <div class="feedback-container">
+                            <form method="post" action="{% url 'notes:submit_feedback' material.pk %}">
+                                {% csrf_token %}
+                                <label for="id_rating_{{ forloop.counter }}">Rating (1-5):</label>
+                                <select name="rating" id="id_rating_{{ forloop.counter }}" required>
+                                    <option value="">Select</option>
+                                    {% for i in "12345" %}
+                                        <option value="{{ i }}">{{ i }}</option>
                                     {% endfor %}
-                                </ul>
-                            {% endif %}
-                        {% endwith %}
-                    {% else %}
-                        <a href="{{ material.file.url }}" target="_blank">View File</a> |
-                        <a href="{% url 'notes:download_study_material' material.pk %}">Download</a>
-                    {% endif %}
-                </li>
+                                </select>
+                                <br />
+                                <label for="id_comments_{{ forloop.counter }}">Comments:</label><br />
+                                <textarea name="comments" id="id_comments_{{ forloop.counter }}" rows="3" cols="40"></textarea>
+                                <br />
+                                <button type="submit" class="btn-primary">Submit Feedback</button>
+                            </form>
+                        </div>
+                    </details>
+                    <br />
+                    {% with feedbacks=material.feedbacks.all %}
+                        {% if feedbacks %}
+                            <strong>Feedbacks ({{ feedbacks.count }})</strong><br />
+                            Average Rating: {{ feedbacks|average_rating }}<br />
+                            <ul>
+                                {% for fb in feedbacks %}
+                                    <li>{{ fb.user.username }}: Rating {{ fb.rating }} - {{ fb.comments }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    {% endwith %}
+                </div>
             {% empty %}
-                <li>No study materials found.</li>
+                <p>No study materials found.</p>
             {% endfor %}
-        </ul><br><br>
-        <p><a href="{% url 'notes:upload_study_material' %}" class="btn-primary">Upload New Study Material</a></p><br><br>
+        </div>
+        <br /><br />
+        <p><a href="{% url 'notes:upload_study_material' %}" class="btn-primary">Upload New Study Material</a></p>
+        <br /><br />
         <p><a href="{% url 'notes:home' %}" class="btn-primary">Home</a></p>
-    </div>
-        
+    </main>
 </body>
 </html>

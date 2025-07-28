@@ -1,10 +1,4 @@
-/* filepath: [global.css](http://_vscodecontentref_/0) */
-/* ===============================
-   College Notes Sharing System UI
-   Modern • Clean • Responsive
-================================ */
 
-/* === 1. CSS Variables & Theme === */
 :root {
   --color-primary: #2c3e50;
   --color-primary-light: #3498db;
@@ -14,7 +8,6 @@
   --color-text: #2d3436;
   --color-muted: #7f8c8d;
   --color-border: #dfe6e9;
-
   --border-radius: 16px;
   --border-radius-sm: 8px;
   --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -24,7 +17,6 @@
   --shadow-dark: 0 12px 40px rgba(44, 62, 80, 0.18);
 }
 
-/* === 2. Reset & Base === */
 * {
   margin: 0;
   padding: 0;
@@ -51,7 +43,7 @@ a:hover {
   text-decoration: underline;
 }
 
-/* === 3. Navigation === */
+
 nav {
   background: rgba(44, 62, 80, 0.97);
   padding: 18px 32px;
@@ -110,7 +102,6 @@ nav .nav-links .btn-primary:hover {
   transform: translateY(-2px) scale(1.05);
 }
 
-/* Style username in navbar */
 nav .nav-links span {
   background: rgba(52, 152, 219, 0.15);
   color: #fff;
@@ -123,7 +114,6 @@ nav .nav-links span {
   border: 1px solid #3498db;
 }
 
-/* === 4. Headings === */
 h1, h2, h3 {
   color: var(--color-primary);
   margin-bottom: 20px;
@@ -135,7 +125,7 @@ h1 { font-size: 3.2rem; }
 h2 { font-size: 2.3rem; }
 h3 { font-size: 1.8rem; }
 
-/* === 5. Container === */
+
 .container {
   max-width: 980px;
   margin: 60px auto;
@@ -156,7 +146,7 @@ h3 { font-size: 1.8rem; }
   background: rgba(255,255,255,0.95);
 }
 
-/* === 6. Filter Form === */
+
 #filterForm {
   display: flex;
   flex-wrap: wrap;
@@ -200,7 +190,7 @@ h3 { font-size: 1.8rem; }
   transform: scale(1.05);
 }
 
-/* === 7. Study Materials List & Card === */
+
 ul.materials-list {
   list-style: none;
   padding: 0;
@@ -278,7 +268,7 @@ ul > li .feedback-container {
   border-radius: var(--border-radius-sm);
 }
 
-/* === 8. PDF Viewer === */
+
 embed {
   width: 100%;
   height: 400px;
@@ -289,7 +279,7 @@ embed {
   background: #f4f7fa;
 }
 
-/* === 9. Buttons === */
+
 button,
 .btn-primary {
   background: linear-gradient(90deg, var(--color-accent), var(--color-primary-light));
@@ -314,7 +304,7 @@ button:hover,
   transform: scale(1.07);
 }
 
-/* === 10. Forms === */
+
 form {
   display: flex;
   flex-direction: column;
@@ -350,7 +340,6 @@ select:focus {
   box-shadow: 0 0 12px rgba(52, 152, 219, 0.18);
 }
 
-/* === 11. Feedback Box === */
 .feedback-container {
   background: rgba(234,246,246,0.95);
   padding: 32px;
@@ -385,7 +374,7 @@ select:focus {
   transform: scale(1.07);
 }
 
-/* === 12. Upload Page === */
+
 .upload-container {
   max-width: 600px;
   margin: 40px auto;
@@ -424,7 +413,6 @@ select:focus {
   margin-top: 10px;
 }
 
-/* === 13. Login/Register Page === */
 .auth-container {
   max-width: 420px;
   margin: 60px auto;
@@ -463,7 +451,6 @@ select:focus {
   margin-top: 10px;
 }
 
-/* === 14. Button Group === */
 .button-group {
   display: flex;
   gap: 22px;
@@ -489,7 +476,6 @@ select:focus {
   transform: translateY(-3px) scale(1.05);
 }
 
-/* === 15. Admin Page === */
 .admin-container {
   max-width: 900px;
   margin: 50px auto;
@@ -520,7 +506,6 @@ select:focus {
   background: rgba(52, 152, 219, 0.08);
 }
 
-/* === 16. Responsive === */
 @media (max-width: 900px) {
   .container, .admin-container, .upload-container, .auth-container {
     margin: 30px 10px;
@@ -575,7 +560,6 @@ select:focus {
   }
 }
 
-/* === 17. Utility Classes === */
 .text-center { text-align: center; }
 .mt-2 { margin-top: 12px; }
 .mt-3 { margin-top: 24px; }
